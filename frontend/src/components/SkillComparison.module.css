@@ -1,0 +1,292 @@
+.wrapper {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 24px;
+  align-items: start;
+}
+
+/* Skills panel */
+.skillsPanel {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.columnHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.columnIcon {
+  font-size: 20px;
+}
+
+.columnTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.columnSub {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.skillGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.skillTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 500;
+  border: 1px solid;
+  transition: var(--transition);
+  animation: fadeIn 0.4s ease forwards;
+  opacity: 0;
+}
+
+.skillTag:nth-child(1)  { animation-delay: 0.02s; }
+.skillTag:nth-child(2)  { animation-delay: 0.04s; }
+.skillTag:nth-child(3)  { animation-delay: 0.06s; }
+.skillTag:nth-child(4)  { animation-delay: 0.08s; }
+.skillTag:nth-child(5)  { animation-delay: 0.10s; }
+.skillTag:nth-child(6)  { animation-delay: 0.12s; }
+.skillTag:nth-child(7)  { animation-delay: 0.14s; }
+.skillTag:nth-child(8)  { animation-delay: 0.16s; }
+.skillTag:nth-child(n+9){ animation-delay: 0.20s; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.matched {
+  color: var(--accent-green);
+  border-color: rgba(16, 185, 129, 0.2);
+  background: rgba(16, 185, 129, 0.06);
+}
+
+.missing {
+  color: var(--accent-rose);
+  border-color: rgba(244, 63, 94, 0.2);
+  background: rgba(244, 63, 94, 0.06);
+}
+
+.skillDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.emptyNote {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* Divider */
+.divider {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding-top: 8px;
+  height: 100%;
+}
+
+.dividerLine {
+  flex: 1;
+  width: 1px;
+  background: var(--border);
+}
+
+.dividerLabel {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+}
+
+/* Repos panel */
+.reposPanel {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.panelHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+  background: rgba(255,255,255,0.02);
+}
+
+.repoCount {
+  margin-left: auto;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 100px;
+  background: var(--accent-teal-dim);
+  color: var(--accent-teal);
+}
+
+.repoList {
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 480px;
+  overflow-y: auto;
+}
+
+.repoCard {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  text-decoration: none;
+  transition: var(--transition);
+  animation: slideIn 0.3s ease both;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(8px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.repoCard:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border);
+}
+
+.repoTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.repoName {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.repoStars {
+  font-size: 11px;
+  color: var(--accent-amber);
+  flex-shrink: 0;
+}
+
+.repoBottom {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.repoLang {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.langDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.repoTopics {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.topicTag {
+  font-size: 10px;
+  padding: 1px 7px;
+  border-radius: 4px;
+  background: var(--accent-purple-dim);
+  color: #a78bfa;
+  border: 1px solid rgba(124, 58, 237, 0.2);
+}
+
+/* Stack breakdown */
+.stackBreakdown {
+  border-top: 1px solid var(--border);
+}
+
+.stackTags {
+  padding: 12px 12px 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.stackTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+}
+
+@media (max-width: 1024px) {
+  .wrapper {
+    grid-template-columns: 1fr;
+  }
+
+  .skillsPanel {
+    grid-template-columns: 1fr;
+  }
+
+  .divider {
+    flex-direction: row;
+    height: auto;
+  }
+
+  .dividerLine {
+    flex: 1;
+    width: auto;
+    height: 1px;
+  }
+}

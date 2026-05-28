@@ -1,0 +1,124 @@
+# PathFinder Custom Source Spec for Coral
+# The Muse Public Jobs API → SQL Table
+#
+# This spec maps the free The Muse API to a Coral-queryable SQL table.
+# Install: coral source add --file ./coral-sources/job-market.yaml
+# Lint:    coral source lint ./coral-sources/job-market.yaml
+# Test:    coral source test job_market
+#
+# Submit this as a PR to https://github.com/withcoral/coral
+# to qualify for the $100 open-source contribution bounty.
+
+name: job_market
+version: "1.0.0"
+description: >
+  Fetches real software engineering job listings from The Muse public API
+  and exposes them as a SQL table. Enables cross-source JOINs with GitHub
+  and Notion for AI-powered career gap analysis.
+author: PathFinder Team
+license: MIT
+tags:
+  - jobs
+  - career
+  - hiring
+  - software-engineering
+
+sources:
+  - name: job_listings
+    description: "Software engineering job listings with extracted tech skill requirements"
+    endpoint:
+      base_url: "https://www.themuse.com"
+      path: "/api/public/jobs"
+      method: GET
+    auth:
+      type: none
+    params:
+      - name: category
+        type: string
+        description: "Job category filter (e.g. 'Software Engineer', 'Data Science')"
+        default: "Software Engineer"
+        sql_param: true
+      - name: page
+        type: integer
+        description: "Page number for pagination (0-indexed)"
+        default: 0
+        pagination: true
+      - name: descending
+        type: boolean
+        default: true
+    pagination:
+      type: offset
+      param: page
+      results_path: "$.results"
+      total_path: "$.total"
+      page_size: 20
+    columns:
+      - name: job_id
+        description: "Unique job identifier"
+        type: string
+        path: "$.id"
+        primary_key: true
+      - name: role_name
+        description: "Job title / role name"
+        type: string
+        path: "$.name"
+      - name: company
+        description: "Company name"
+        type: string
+        path: "$.company.name"
+      - name: company_size
+        description: "Company size category"
+        type: string
+        path: "$.company.size"
+      - name: location
+        description: "Primary work location"
+        type: string
+        path: "$.locations[0].name"
+      - name: remote_friendly
+        description: "Whether the role allows remote work"
+        type: boolean
+        path: "$.refs.landing_page"
+        transform: "value.includes('remote') || value.includes('flexible')"
+      - name: job_description
+        description: "Full job description HTML"
+        type: string
+        path: "$.contents"
+      - name: tech_stack
+        description: "Extracted technology keywords from job description (JSON array)"
+        type: json
+        path: "$.contents"
+        transform: |
+          const keywords = ['React','Next.js','Vue','Angular','TypeScript','JavaScript',
+            'Node.js','Express','Python','Django','FastAPI','Flask','Java','Spring',
+            'Go','Rust','C++','C#','.NET','AWS','GCP','Azure','Docker','Kubernetes',
+            'Terraform','PostgreSQL','MongoDB','Redis','MySQL','GraphQL','REST',
+            'Git','CI/CD','Linux','Machine Learning','TensorFlow','PyTorch','SQL',
+            'Microservices','Kafka','Elasticsearch','Spark','dbt','Airflow'];
+          const text = value.replace(/<[^>]*>/g, ' ').toLowerCase();
+          return keywords.filter(k => text.includes(k.toLowerCase()));
+      - name: published_at
+        description: "When the job was published"
+        type: datetime
+        path: "$.publication_date"
+      - name: job_url
+        description: "Link to the job posting"
+        type: string
+        path: "$.refs.landing_page"
+
+test_queries:
+  - query: >
+      SELECT role_name, company, location, tech_stack
+      FROM job_market.job_listings
+      WHERE category = 'Software Engineer'
+      LIMIT 5
+    expected_rows: 5
+    expected_columns:
+      - role_name
+      - company
+      - location
+      - tech_stack
+
+  - query: >
+      SELECT COUNT(*) as total_jobs
+      FROM job_market.job_listings
+    description: "Should return at least 1 job listing"
