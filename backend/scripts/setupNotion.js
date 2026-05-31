@@ -6,42 +6,47 @@
  * Prerequisites:
  *   1. Go to https://www.notion.so/my-integrations
  *   2. Create a new integration → copy the "Internal Integration Token"
- *   3. Open any Notion page → Share → Invite your integration
+ *   3. Open any Notion page → click "..." top right → Connections → Add connections → select your integration
  *   4. Copy that page's ID from the URL: notion.so/Your-Page-XXXXXXXXXXXXXXXX
- *      (it's the 32-char hex at the end)
+ *      (it's the 32-char hex at the end, before any "?")
  * 
- * Usage:
- *   cd backend
+ * Usage (from PathFinder/ root OR from PathFinder/backend/):
+ *   node backend/scripts/setupNotion.js <PAGE_ID>
  *   node scripts/setupNotion.js <PAGE_ID>
- * 
- * Example:
- *   node scripts/setupNotion.js abc123def456789012345678901234ab
  */
 
-require('dotenv').config({ path: '../backend/.env' });
+const path = require('path');
+
+// Resolve .env from backend/ regardless of where the script is run from
+const envPath = path.resolve(__dirname, '../.env');
+require('dotenv').config({ path: envPath });
+
 const { Client } = require('@notionhq/client');
 const fs = require('fs');
-const path = require('path');
 
 async function main() {
   const pageId = process.argv[2];
 
   if (!pageId) {
-    console.error('\n❌ Usage: node scripts/setupNotion.js <YOUR_NOTION_PAGE_ID>');
+    console.error('\n❌ Usage: node backend/scripts/setupNotion.js <YOUR_NOTION_PAGE_ID>');
     console.error('   The page ID is the 32-char hex at the end of your Notion page URL.\n');
     process.exit(1);
   }
 
   if (!process.env.NOTION_TOKEN) {
-    console.error('\n❌ NOTION_TOKEN not found in backend/.env');
+    console.error(`\n❌ NOTION_TOKEN not found.`);
+    console.error(`   Looked in: ${envPath}`);
     console.error('   Add: NOTION_TOKEN=secret_xxxx\n');
     process.exit(1);
   }
 
-  const notion = new Client({ auth: process.env.NOTION_TOKEN });
-
-  console.log('\n🧭 PathFinder — Notion Setup');
+  console.log(`\n🧭 PathFinder — Notion Setup`);
+  console.log(`   Using .env from: ${envPath}`);
+  console.log(`   NOTION_TOKEN found: ✅`);
+  console.log(`   Page ID: ${pageId}`);
   console.log('   Creating Study Tracker database...\n');
+
+  const notion = new Client({ auth: process.env.NOTION_TOKEN });
 
   try {
     const db = await notion.databases.create({
@@ -89,7 +94,6 @@ async function main() {
     console.log(`   URL: https://notion.so/${dbId.replace(/-/g, '')}`);
 
     // Auto-update the .env file
-    const envPath = path.join(__dirname, '../.env');
     let envContent = fs.readFileSync(envPath, 'utf-8');
 
     if (envContent.includes('NOTION_DATABASE_ID=')) {
@@ -105,7 +109,12 @@ async function main() {
   } catch (err) {
     console.error('\n❌ Setup failed:', err.message);
     if (err.message.includes('Could not find page')) {
-      console.error('   Make sure you shared the Notion page with your integration.');
+      console.error('\n💡 FIX: You need to share the Notion page with your integration:');
+      console.error('   1. Open the Notion page in your browser');
+      console.error('   2. Click "..." (three dots) in the top-right corner');
+      console.error('   3. Click "Connections" → "Add connections"');
+      console.error('   4. Search for your integration name and click it');
+      console.error('   5. Run this script again\n');
     }
     process.exit(1);
   }

@@ -50,7 +50,7 @@ Be specific — reference the user's actual repo names when relevant.`;
 // ============================================================
 
 const analyzeGap = async ({ targetRole, requiredSkills, githubRepos, currentTasks }) => {
-  const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+  const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
   // Deduplicate and aggregate skills from job listings
   const allRequired = [...new Set(requiredSkills.flatMap(j => j.tech_stack || []))];
@@ -106,7 +106,7 @@ const analyzeGap = async ({ targetRole, requiredSkills, githubRepos, currentTask
 // ============================================================
 
 const chatFollowUp = async ({ message, analysisContext }) => {
-  const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+  const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
   const chatPrompt = `You are PathFinder, a career routing AI. The user has already received their gap analysis:
 ${JSON.stringify(analysisContext, null, 2)}
